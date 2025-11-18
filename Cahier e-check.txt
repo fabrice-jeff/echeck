@@ -1,0 +1,78 @@
+Cahier de charge
+e-check est une application de chéquier électronique, elle permet d'émettre des chèques et de le partager avec de tiers bénéficiaires.
+
+Fonctionnalités
+1- Inscription et connexion
+  - Inscription ( Nom, Prénom, email, numéro et mot de passe, Accepter les conditions et politiques d'utilisation - Authentification par mail pour finaliser l'inscription )
+   - connexion ( email ou numéro, mot de passe, authentification par mail ou par sms)
+2- Authentification ( Mail ou sms, emprunte digitale pour déverrouiller l'application)
+
+3- Ajouter un compte
+   - Choisir votre banque
+   - ajouter numéro de compte
+   - ajouter IBAN
+   - ajouter BIC
+   - Confirmation et enregistrer
+   - Fonctionnalités de supprimer un compte
+
+
+  
+4- Émettre un chèque
+   - Choisi compte débiteur
+   - Nom et Prénom du bénéficiaires
+   - Montant
+   - Objet du chèque
+   - Vérification et confirmation
+   - Générer chèque 
+    
+5- Historique des chèques émises
+    - historique ou répertoire de tout les chèques émises(avec des détails sur chaque opération)
+   - Statut de chaque chèques émise ( si le chèque émise à été encaissé déjà par le bénéficiaires ça notifie par des statues)
+
+6- Fonctionnalités de partage des chèques émises (Format doc protéger par un code) comme ça se fait pour le CIP.
+   - Partage par Mail, whatsapp, Facebook etc... (version pdf) + code secret d'authentification
+    
+7- Profile
+8- Intégration des moyens de payement(mtn et moov money, cartes bancaires)
+
+9- Intégration d'authentification par emprunte digitale (déverrouillage de l'application)
+10- Intégration de systèmes d'abonnement
+     - Un abonnement vaut entre 25 à 50 chèques ( peut émettre jusqu'à n chèque , si ce nombre est épuisé, l'utilisateur doit faire une nouvelle abonnement, également si l'utilisateur n'épuise pas les 50 chèques sur un durée de 1an, cet abonnement s'annule automatiquement)
+     - Frais d'abonnement (à définir)
+     - Un abonnement est spécifique pour chaque compte créer ( c'est à dire si l'utilisateur créer deux compte, il doit alors souscrire à deux abonnement car les deux compte créer sont liés à deux banques différentes)
+   - Un chèque émise à une durée de 1ans 8 jours avant expiration
+   - 
+
+11- Intégration de la visualisation mode jour et nuit (Expérience utilisateur)
+
+12- Génération de code QR et de code secret d'authentification du chèque
+
+   - le code QR et secret doit figurer sur la version électronique (pdf) du chèque.
+
+13- Chèque numérique(Information a retrouver sur le chèque pdf)
+
+     -Le nom et prénom de l'émetteur du chèque
+     - le nom et prénom du bénéficiaires du chèque
+    - le nom de la banque
+    - numéro de compte
+    - Montant en chiffres et en lettres
+    - Date d'émission
+    - lieu d'émission du chèque
+    - le code secret et le code QR
+    - le logo e-Check en filigrane 
+    - Si possible enregistrement de signature numérique
+    - Objet du chèque (se pour quoi on émet le chèque)
+
+## Terminal d'authentification des chèques émises par un utilisateur(utilisation au niveau de la banque) je pense que ça va être gérer via un interface web.
+Il faut alors une application web pour offrir un petit dashbord aux banques.
+
+   - Interface d'authentification ( renseignements du code secret ou scannage QR)
+    - Affichage du chèque sur le terminal (possibilité d'imprimer)
+    - Validation du chèque (après contrôle de pièces d'identité pour une conformité avec les informations concernant le bénéficiaires sur le chèque)
+    - Enregistrement du chèque dans l'historique déjà authentifié.
+
+NB: Les informations fonctionnelles ci-dessus détaillées sont pas définitives. Elle peut faire objet de modification, de correction et d'ajout. Donc j'attends votre point de vue sur l'ensemble du projet.
+Deadline : Un (1) mois pour avoir un MVP testable.
+    
+
+
