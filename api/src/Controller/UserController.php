@@ -7,6 +7,7 @@ use App\Exception\IncorrectRequestException;
 use App\Request\User\ActivateRequest;
 use App\Request\User\LoginRequest;
 use App\Request\User\RegisterRequest;
+use App\Request\User\UpdateRequest;
 use App\Services\Mail\IMailService;
 use App\Services\User\IUserService;
 use App\Utils\Constants\AppValuesConstants;
@@ -19,7 +20,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
-    #[Route('/api/user')]
+#[Route('/api/user')]
 class UserController extends AbstractController
 {
     public function __construct(
@@ -65,6 +66,8 @@ class UserController extends AbstractController
             ]);
         }
     }
+
+
     #[Route('/login',name: 'app_user_login', methods: ['POST'])]
     public  function login(Request $request): JsonResponse
     {
@@ -128,6 +131,40 @@ class UserController extends AbstractController
         }
     }
 
+    #[Route('/update',name: 'app_user_update', methods: ['POST'])]
+    public  function update(Request $request): JsonResponse
+    {
+        try {
+            $json = $request->getContent();
+            
+            if($json === ""){
+              throw new IncorrectRequestException("Corps de requette mal formee");
+            }
+            $updateRequest = $this->serializer->deserialize($json, UpdateRequest::class, 'json');
+            $validation = AppValuesConstants::validation($updateRequest, $this->validator);
+            if($validation !== true){
+                return new JsonResponse(['errors' => $validation], 400);
+            }
+            ;
+
+            return new JsonResponse([
+                'message' => 'User update Success',
+                'data' => json_decode($this->userService->update($updateRequest, $updateRequest->id)),
+                'code' => Response::HTTP_CREATED
+                
+            ]);
+        }
+        catch(ExceptionInterface $e)
+        {
+            return  new JsonResponse([
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file'=> $e->getTrace(),
+            ]);
+        }
+    }
+
+    
     // #[Route('/{id}/activate', name: 'app_user_activate', methods: ['GET'])]
     // public function getByEmail( Request $request, int $id):JsonResponse
     // {

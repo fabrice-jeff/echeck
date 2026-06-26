@@ -20,7 +20,7 @@ trait  EntityUserOperation
     private $insertBy;
 
     /**
-     * @return User|null
+     * @return User
      */
     public function getInsertBy(): ?User
     {

@@ -19,9 +19,14 @@ class AccountRequest extends Request
     #[Assert\Type('integer')]
     public int $banqueId;
 
-    #[Assert\NotBlank]
-    #[Assert\Type('string')]
-    public string $dateExpiration;
+    
+    // #[Assert\NotNull]
+    // #[Assert\Type('float')]
+    // public float $amount;
+
+    // #[Assert\NotBlank]
+    // #[Assert\Type('string')]
+    // public string $dateExpiration;
 
 
 }

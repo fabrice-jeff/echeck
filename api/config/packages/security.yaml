@@ -31,6 +31,8 @@ security:
     access_control:
         - { path: ^/api/user/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/user/register, roles: PUBLIC_ACCESS }
+        - { path: ^/api/banque/all, roles: PUBLIC_ACCESS }
+        - { path: ^/api/banque/add, roles: PUBLIC_ACCESS }
         - { path: ^/api/country, roles: PUBLIC_ACCESS }
         - { path: ^/api/user/activate, roles: PUBLIC_ACCESS }
         - { path: ^/api/forget-password, roles: PUBLIC_ACCESS }

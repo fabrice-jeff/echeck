@@ -9,25 +9,36 @@ class ChequeRequest extends Request
 {
     #[Assert\NotBlank]
     #[Assert\Type('string')]
-    public string $nomBeneficiaire;
+    public string $name;
+    
     #[Assert\NotBlank]
     #[Assert\Type('string')]
-    public string $prenomBeneficiaire;
+    public string $firstName;
 
     #[Assert\NotNull]
     #[Assert\Type('float')]
-    public float $montant;
+    public float $amount;
 
     #[Assert\NotBlank]
     #[Assert\Type('string')]
-    public string $objet;
-
-    #[Assert\NotBlank]
-    #[Assert\Type('string')]
-    public string $statut;
+    public string $object;
 
     #[Assert\NotNull]
-    #[Assert\Type('integer')]
-    public int $accountId;
+    #[Assert\Type('string')]
+    public string $accountIban;
+
+    #[Assert\NotNull]
+    #[Assert\Type('string')]
+    public string $file;
+    
+    #[Assert\NotNull]
+    #[Assert\Type('string')]
+    public string $fileName;
+
+      #[Assert\NotNull]
+    #[Assert\Type('string')]
+    public string $extension;
+
+
 
 }

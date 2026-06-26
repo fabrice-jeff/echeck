@@ -12,13 +12,15 @@ use App\Repository\UserRepository;
 use App\Request\User\ActivateRequest;
 use App\Request\User\LoginRequest;
 use App\Request\User\RegisterRequest;
+use App\Request\User\UpdateRequest;
 use App\Services\Helpers\HelperFonction;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\SerializerInterface;
-
+use Symfony\Component\Validator\Constraints\Json;
 
 readonly class UserService implements IUserService
 {
@@ -77,9 +79,27 @@ readonly class UserService implements IUserService
         return json_encode(json_decode($this->serializer->serialize($acteur, 'json'))); 
     }
 
-    public function update(RegisterRequest $userRequest, int $id): void
+    public function update(UpdateRequest $updateRequest, int $id): ?String
     {
-        // TODO: Implement update() method.
+        $user = $this->userRepository->find($id);
+        $acteur = $this->getByUser($user);
+         if(!$acteur){
+            throw new RessourceNotFoundException("Cette email n'est pas associe a un utilisateur dans la BD");
+        }
+        $acteur->setNom($updateRequest->nom)
+        ->setEmail($updateRequest->email)
+        ->setPrenoms($updateRequest->prenoms)
+        ->setNumero($updateRequest->numeroTel)
+        ->setUpdatedAt(new DateTime('now'));
+        //
+        $user->setEmail($updateRequest->email)
+         ->setUpdatedAt(new DateTime('now'));
+
+        $this->manager->persist($acteur);
+        $this->manager->persist($user);
+        $this->manager->flush();
+        return Json_encode(json_decode($this->serializer->serialize($acteur, 'json')));
+
     }
 
     public function delete(int $id): void

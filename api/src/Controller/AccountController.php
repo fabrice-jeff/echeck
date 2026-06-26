@@ -53,6 +53,56 @@ class AccountController extends AbstractController
         }
     }
 
+    #[Route('/iban/{iban}', name: 'app_account_by_iban', methods: ['GET'])]
+    public function getByIban(String $iban):JsonResponse
+    {
+        try {
+            $account = $this->accountService->getByIban($iban);
+            if(!$account)
+            {
+                throw new RessourceNotFoundException("This account does not exist");
+            }
+            return  new JsonResponse([
+                'message' => 'Account found',
+                'data' => json_decode($this->serializer->serialize($account,'json')),
+                'code' => Response::HTTP_OK,
+            ]);
+        }
+        catch(ExceptionInterface $e)
+        {
+            return new JsonResponse([
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file'=> $e->getTrace(),
+            ]);
+        }
+    }
+
+    #[Route('/{id}/account', name: 'app_account_by_id', methods: ['GET'])]
+    public function getBy(int $id):JsonResponse
+    {
+        try {
+            $account = $this->accountService->getById($id);
+            if(!$account)
+            {
+                throw new RessourceNotFoundException("This account does not exist");
+            }
+            return  new JsonResponse([
+                'message' => 'Account found',
+                'data' => json_decode($this->serializer->serialize($account,'json')),
+                'code' => Response::HTTP_OK,
+            ]);
+        }
+        catch(ExceptionInterface $e)
+        {
+            return new JsonResponse([
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file'=> $e->getTrace(),
+            ]);
+        }
+    }
+
 
     #[Route('/all/by_actor', name: 'app_account_by_actor_id', methods: ['GET'])]
     public function allByActor(): JsonResponse
@@ -76,6 +126,9 @@ class AccountController extends AbstractController
             ]);
         }
     }
+
+
+
     #[Route('/all', name:'app_account_all', methods: ['GET'])]
     public function all():JsonResponse
     {
@@ -97,6 +150,9 @@ class AccountController extends AbstractController
         }
 
     }
+
+
+
     #[Route('/add', name:'app_account_add', methods: 'POST')]
     public  function add(Request $request):JsonResponse
     {
@@ -127,6 +183,8 @@ class AccountController extends AbstractController
         }
     }
 
+
+    
     #[Route('/{id}/delete', name: 'app_account_delete', methods: ['DELETE'])]
     public function delete(int $id):JsonResponse
     {
@@ -135,7 +193,7 @@ class AccountController extends AbstractController
             return new JsonResponse([
                 'message' => "Account delete Successful",
                 'data' => null
-            ]);
+            ]); 
         }
         catch(ExceptionInterface $e)
         {

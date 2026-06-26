@@ -5,7 +5,6 @@ namespace App\Entity;
 use App\Repository\ChequeRepository;
 use App\Utils\TraitClasses\EntityTimestampableTrait;
 use App\Utils\TraitClasses\EntityUserOperation;
-use App\Utils\TraitClasses\EntityValidateBy;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ChequeRepository::class)]
@@ -13,7 +12,6 @@ class Cheque
 {
     use EntityUserOperation;
     use EntityTimestampableTrait;
-    use EntityValidateBy;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -37,6 +35,9 @@ class Cheque
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?Compte $compte = null;
+
+    #[ORM\Column(length: 255, nullable:true)]
+    private ?string $fileUrl = null;
 
     public function getId(): ?int
     {
@@ -111,6 +112,18 @@ class Cheque
     public function setCompte(?Compte $compte): static
     {
         $this->compte = $compte;
+
+        return $this;
+    }
+
+    public function getFileUrl(): ?string
+    {
+        return $this->fileUrl;
+    }
+
+    public function setFileUrl(string $fileUrl): static
+    {
+        $this->fileUrl = $fileUrl;
 
         return $this;
     }

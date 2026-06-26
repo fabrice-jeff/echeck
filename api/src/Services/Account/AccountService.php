@@ -28,7 +28,10 @@ readonly class AccountService implements IAccountService
     {
         return $this->compteRepository->findOneBy(['id' => $id, 'deleted' => false]);
     }
-
+    public function getByIban(String $iban): ?Compte
+    {
+        return $this->compteRepository->findOneBy(['iban' => $iban, 'deleted' => false]);
+    }
     public function getByActorAndId(UserInterface $currentUser, int $id):?Compte
     {
         $actor = $this->userService->getByUser($currentUser);
@@ -53,12 +56,14 @@ readonly class AccountService implements IAccountService
             throw new RessourceNotFoundException("Banque not found");
         }
         $account = new Compte();
-        $dateExpiration = new \DateTime($request->dateExpiration);
-        $account->setDateExpiration($dateExpiration)
+        // $dateExpiration = new \DateTime($request->dateExpiration);
+        $account
             ->setBic($request->bic)
             ->setIban($request->iban)
+            ->setAmount(500000) // Par defaut le montant du compte est de 500000 FCFA
             ->setBanque($banque)
-            ->setActeur($this->userService->getByUser($currentUser));
+            ->setInsertBy($currentUser);
+
         $this->manager->persist($account);
         $this->manager->flush();
         return $account;

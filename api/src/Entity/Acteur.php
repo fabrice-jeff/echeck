@@ -5,7 +5,6 @@ namespace App\Entity;
 use App\Repository\ActeurRepository;
 use App\Utils\TraitClasses\EntityTimestampableTrait;
 use App\Utils\TraitClasses\EntityUserOperation;
-use App\Utils\TraitClasses\EntityValidateBy;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ActeurRepository::class)]
@@ -13,7 +12,6 @@ class Acteur
 {
     use EntityUserOperation;
     use EntityTimestampableTrait;
-    use EntityValidateBy;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

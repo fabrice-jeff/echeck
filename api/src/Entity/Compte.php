@@ -5,7 +5,6 @@ namespace App\Entity;
 use App\Repository\CompteRepository;
 use App\Utils\TraitClasses\EntityTimestampableTrait;
 use App\Utils\TraitClasses\EntityUserOperation;
-use App\Utils\TraitClasses\EntityValidateBy;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CompteRepository::class)]
@@ -13,28 +12,26 @@ class Compte
 {
     use EntityUserOperation;
     use EntityTimestampableTrait;
-    use EntityValidateBy;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique:true)]
     private ?string $iban = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique:true)]
     private ?string $bic = null;
 
-    #[ORM\Column]
-    private ?\DateTime $dateExpiration = null;
+    // #[ORM\Column]
+    // private ?\DateTime $dateExpiration = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?Banque $banque = null;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Acteur $acteur = null;
+    #[ORM\Column]
+    private ?float $amount = null;
 
 
     public function getId(): ?int
@@ -67,17 +64,17 @@ class Compte
     }
 
 
-    public function getDateExpiration(): ?\DateTime
-    {
-        return $this->dateExpiration;
-    }
+    // public function getDateExpiration(): ?\DateTime
+    // {
+    //     return $this->dateExpiration;
+    // }
 
-    public function setDateExpiration(\DateTime $dateExpiration): static
-    {
-        $this->dateExpiration = $dateExpiration;
+    // public function setDateExpiration(\DateTime $dateExpiration): static
+    // {
+    //     $this->dateExpiration = $dateExpiration;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
     public function getBanque(): ?Banque
     {
@@ -90,14 +87,16 @@ class Compte
         return $this;
     }
 
-    public function getActeur(): ?Acteur
+
+
+    public function getAmount(): ?float
     {
-        return $this->acteur;
+        return $this->amount;
     }
 
-    public function setActeur(?Acteur $acteur): static
+    public function setAmount(float $amount): static
     {
-        $this->acteur = $acteur;
+        $this->amount = $amount;
 
         return $this;
     }
