@@ -39,6 +39,10 @@ class BanqueService implements IBanqueService
         }
         $banque = new Banque();
         $banque->setLibelle($request->libelle);
+        $banque->setName($request->name);
+        $banque->setAdressPostal($request->adressPostal);
+        $banque->setCodePostal($request->codePostal);
+        $banque->setPhone($request->phone);
         $this->manager->persist($banque);
         $this->manager->flush();
     }
@@ -50,6 +54,10 @@ class BanqueService implements IBanqueService
             throw new RessourceNotFoundException("Cette banque n'existe pas");
         }
         $banque->setLibelle($request->libelle);
+        $banque->setName($request->name);
+        $banque->setAdressPostal($request->adressPostal);
+        $banque->setCodePostal($request->codePostal);
+        $banque->setPhone($request->phone);
         $this->manager->flush();
     }
 

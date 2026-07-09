@@ -4,6 +4,7 @@ namespace App\Services\Cheque;
 
 use App\Entity\Cheque;
 use App\Entity\Compte;
+use App\Exception\IncorrectRequestException;
 use App\Exception\RessourceNotFoundException;
 use App\Repository\ChequeRepository;
 use App\Repository\CompteRepository;
@@ -11,7 +12,6 @@ use App\Request\Cheque\ChequeRequest;
 use App\Services\User\IUserService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -58,7 +58,7 @@ readonly class ChequeService implements IChequeService
 
        // Verifier que le montant du cheque est inferieur ou egal au montant du compte
        if($request->amount > $account->getAmount()){
-            throw new RessourceNotFoundException("Le montant du cheque est superieur au montant du compte");
+            throw new IncorrectRequestException("Le montant du cheque est superieur au montant du compte");
        }
 
        $account->setAmount($account->getAmount() - $request->amount);
@@ -66,20 +66,18 @@ readonly class ChequeService implements IChequeService
 
         // 1. Récupérer les données
         $base64File = $request->file;
-        $filename = $request->filename ?? uniqid('pdf_') . '.pdf';
+        $extension = preg_replace('/[^a-zA-Z0-9]/', '', $request->extension) ?: 'pdf';
+        $filename = uniqid('pdf_') . '.' . $extension;
         $fileContent = base64_decode($base64File);
         $fs = new Filesystem();
-        
+
         if (!$fs->exists($uploadDirectory)) {
             $fs->mkdir($uploadDirectory, 0777);
         }
         $filePath = $uploadDirectory . '/' . $filename;
 
-        try {
-            file_put_contents($filePath, $fileContent);
-         
-        } catch (\Exception $e) {
-            return new JsonResponse(['error' => 'Erreur lors de l\'écriture du fichier'], 500);
+        if (file_put_contents($filePath, $fileContent) === false) {
+            throw new IncorrectRequestException("Erreur lors de l'écriture du fichier");
         }
 
        $cheque = new Cheque();

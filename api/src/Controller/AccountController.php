@@ -49,7 +49,7 @@ class AccountController extends AbstractController
                 'message' => $e->getMessage(),
                 'line' => $e->getLine(),
                 'file'=> $e->getTrace(),
-            ]);
+            ], Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -74,35 +74,9 @@ class AccountController extends AbstractController
                 'message' => $e->getMessage(),
                 'line' => $e->getLine(),
                 'file'=> $e->getTrace(),
-            ]);
+            ], Response::HTTP_BAD_REQUEST);
         }
     }
-
-    #[Route('/{id}/account', name: 'app_account_by_id', methods: ['GET'])]
-    public function getBy(int $id):JsonResponse
-    {
-        try {
-            $account = $this->accountService->getById($id);
-            if(!$account)
-            {
-                throw new RessourceNotFoundException("This account does not exist");
-            }
-            return  new JsonResponse([
-                'message' => 'Account found',
-                'data' => json_decode($this->serializer->serialize($account,'json')),
-                'code' => Response::HTTP_OK,
-            ]);
-        }
-        catch(ExceptionInterface $e)
-        {
-            return new JsonResponse([
-                'message' => $e->getMessage(),
-                'line' => $e->getLine(),
-                'file'=> $e->getTrace(),
-            ]);
-        }
-    }
-
 
     #[Route('/all/by_actor', name: 'app_account_by_actor_id', methods: ['GET'])]
     public function allByActor(): JsonResponse
@@ -123,7 +97,7 @@ class AccountController extends AbstractController
                 'message' => $e->getMessage(),
                 'line' => $e->getLine(),
                 'file'=> $e->getTrace(),
-            ]);
+            ], Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -146,7 +120,7 @@ class AccountController extends AbstractController
                 'message' => $e->getMessage(),
                 'line' => $e->getLine(),
                 'file'=> $e->getTrace(),
-            ]);
+            ], Response::HTTP_BAD_REQUEST);
         }
 
     }
@@ -179,7 +153,7 @@ class AccountController extends AbstractController
                 'message' => $e->getMessage(),
                 'line' => $e->getLine(),
                 'file'=> $e->getTrace(),
-            ]);
+            ], Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -201,7 +175,7 @@ class AccountController extends AbstractController
                 'message' => $e->getMessage(),
                 'line' => $e->getLine(),
                 'file'=> $e->getTrace(),
-            ]);
+            ], Response::HTTP_BAD_REQUEST);
         }
     }
 }

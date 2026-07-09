@@ -48,7 +48,7 @@ class BanqueController extends AbstractController
         catch (ExceptionInterface  $e) {
             return new JsonResponse([
                 'message' => $e->getCode(),
-            ]);
+            ], Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -75,7 +75,7 @@ class BanqueController extends AbstractController
         catch (ExceptionInterface $e) {
             return new JsonResponse([
                 'message' => $e->getMessage(),
-            ]);
+            ], Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -96,7 +96,7 @@ class BanqueController extends AbstractController
         catch (ExceptionInterface $e) {
             return new JsonResponse([
                 'message' => $e->getMessage(),
-            ]);
+            ], Response::HTTP_BAD_REQUEST);
         }
     }
     #[Route('/{id}/delete', name: 'app_banque_delete', methods: ['DELETE'])]
@@ -112,7 +112,7 @@ class BanqueController extends AbstractController
         catch (ExceptionInterface $e) {
             return new JsonResponse([
                 'message' => $e->getMessage(),
-            ]);
+            ], Response::HTTP_BAD_REQUEST);
         }
     }
 

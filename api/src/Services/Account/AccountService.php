@@ -7,7 +7,6 @@ use App\Exception\RessourceNotFoundException;
 use App\Repository\CompteRepository;
 use App\Request\Account\AccountRequest;
 use App\Services\Banque\IBanqueService;
-use App\Services\User\IUserService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -17,7 +16,6 @@ readonly class AccountService implements IAccountService
     public function __construct(
         private readonly CompteRepository $compteRepository,
         private readonly EntityManagerInterface $manager,
-        private readonly IUserService $userService,
         private readonly IBanqueService $banqueService,
     )
     {
@@ -34,14 +32,12 @@ readonly class AccountService implements IAccountService
     }
     public function getByActorAndId(UserInterface $currentUser, int $id):?Compte
     {
-        $actor = $this->userService->getByUser($currentUser);
-        return $this->compteRepository->findOneBy(['deleted' => false, 'acteur' => $actor, 'id' => $id]);
+        return $this->compteRepository->findOneBy(['deleted' => false, 'insertBy' => $currentUser, 'id' => $id]);
     }
 
     public function allByActor(UserInterface $currentUser): mixed
     {
-        $actor = $this->userService->getByUser($currentUser);
-        return $this->compteRepository->findBy(['deleted' => false, 'acteur' => $actor]);
+        return $this->compteRepository->findBy(['deleted' => false, 'insertBy' => $currentUser]);
     }
 
     public function all(): array

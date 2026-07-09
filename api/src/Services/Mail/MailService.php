@@ -20,11 +20,24 @@ class MailService implements IMailService{
             ->subject('Valider votre compte')
             ->htmlTemplate('mails/account_creation.html.twig')
             ->context([
-                'name' => $acteur->getPrenoms(),  
+                'name' => $acteur->getPrenoms(),
                 'code' => $acteur->getUser()->getCodeVerification(),
-            ])     
-        ;
+            ]);
         $this->mailer->send($email);
     }
-    
+
+    public function sendResetPassword(Acteur $acteur): void
+    {
+        $email = (new TemplatedEmail())
+            ->from('mariejosep705@gmail.com')
+            ->to($acteur->getEmail())
+            ->subject('Réinitialisation de votre mot de passe')
+            ->htmlTemplate('mails/reset_password.html.twig')
+            ->context([
+                'name' => $acteur->getPrenoms(),
+                'code' => $acteur->getUser()->getCodeVerification(),
+            ]);
+        $this->mailer->send($email);
+    }
+
 }

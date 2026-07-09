@@ -1,12 +1,14 @@
-<?php
-
+﻿<?php 
 namespace App\Controller;
 
 use App\Entity\Acteur;
 use App\Exception\IncorrectRequestException;
 use App\Request\User\ActivateRequest;
+use App\Request\User\ForgotPasswordRequest;
 use App\Request\User\LoginRequest;
 use App\Request\User\RegisterRequest;
+use App\Request\User\ResetPasswordRequest;
+use App\Request\User\ResendCodeRequest;
 use App\Request\User\UpdateRequest;
 use App\Services\Mail\IMailService;
 use App\Services\User\IUserService;
@@ -19,6 +21,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 #[Route('/api/user')]
 class UserController extends AbstractController
@@ -49,7 +52,7 @@ class UserController extends AbstractController
             {
                 $acteur = $this->userService->add($registerRequest);
                 /// Emvoi d'un email a l'utilisteur 
-                $this->mailService->send($this->serializer->deserialize($acteur, Acteur::class, 'json'), 123456);
+                $this->mailService->send($this->serializer->deserialize($acteur, Acteur::class, 'json'));
                 return  new JsonResponse([
                     'message' => 'User add Success',
                     'data' =>json_decode($acteur),
@@ -63,7 +66,12 @@ class UserController extends AbstractController
              'message' => $exception->getMessage(),
              'line' => $exception->getLine(),
              'file'=> $exception->getTrace(),
-            ]);
+            ], Response::HTTP_BAD_REQUEST);
+        }
+        catch(HttpException $exception){
+            return new JsonResponse([
+                'message' => $exception->getMessage(),
+            ], $exception->getStatusCode());
         }
     }
 
@@ -96,7 +104,14 @@ class UserController extends AbstractController
                 'message' => $e->getMessage(),
                 'line' => $e->getLine(),
                 'file'=> $e->getTrace(),
-            ]);
+            ], Response::HTTP_BAD_REQUEST);
+        }
+        catch(\Exception $e)
+        {
+            return new JsonResponse([
+                'message' => $e->getMessage(),
+                'code' => Response::HTTP_BAD_REQUEST,
+            ], Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -127,7 +142,90 @@ class UserController extends AbstractController
                 'message' => $e->getMessage(),
                 'line' => $e->getLine(),
                 'file'=> $e->getTrace(),
+            ], Response::HTTP_BAD_REQUEST);
+        }
+        catch(HttpException $e)
+        {
+            return new JsonResponse([
+                'message' => $e->getMessage(),
+            ], $e->getStatusCode());
+        }
+    }
+
+    #[Route('/resend-code', name: 'app_user_resend_code', methods: ['POST'])]
+    public function resendCode(Request $request): JsonResponse
+    {
+        try {
+            $json = $request->getContent();
+            if ($json === "") {
+                throw new IncorrectRequestException("Corps de requette mal formee");
+            }
+            $resendRequest = $this->serializer->deserialize($json, ResendCodeRequest::class, 'json');
+            $validation = AppValuesConstants::validation($resendRequest, $this->validator);
+            if ($validation !== true) {
+                return new JsonResponse(['errors' => $validation], 400);
+            }
+            $acteur = $this->userService->resendCode($resendRequest->email);
+            $this->mailService->send($acteur);
+            return new JsonResponse([
+                'message' => 'Code renvoyé avec succès',
+                'code' => Response::HTTP_OK,
             ]);
+        } catch (ExceptionInterface $e) {
+            return new JsonResponse(['message' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        } catch (\Exception $e) {
+            return new JsonResponse(['message' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    #[Route('/forgot-password', name: 'app_user_forgot_password', methods: ['POST'])]
+    public function forgotPassword(Request $request): JsonResponse
+    {
+        try {
+            $json = $request->getContent();
+            if ($json === "") {
+                throw new IncorrectRequestException("Corps de requette mal formee");
+            }
+            $forgotRequest = $this->serializer->deserialize($json, ForgotPasswordRequest::class, 'json');
+            $validation = AppValuesConstants::validation($forgotRequest, $this->validator);
+            if ($validation !== true) {
+                return new JsonResponse(['errors' => $validation], 400);
+            }
+            $acteur = $this->userService->forgotPassword($forgotRequest->email);
+            $this->mailService->sendResetPassword($acteur);
+            return new JsonResponse([
+                'message' => 'Code de réinitialisation envoyé avec succès',
+                'code' => Response::HTTP_OK,
+            ]);
+        } catch (ExceptionInterface $e) {
+            return new JsonResponse(['message' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        } catch (\Exception $e) {
+            return new JsonResponse(['message' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    #[Route('/reset-password', name: 'app_user_reset_password', methods: ['POST'])]
+    public function resetPassword(Request $request): JsonResponse
+    {
+        try {
+            $json = $request->getContent();
+            if ($json === "") {
+                throw new IncorrectRequestException("Corps de requette mal formee");
+            }
+            $resetRequest = $this->serializer->deserialize($json, ResetPasswordRequest::class, 'json');
+            $validation = AppValuesConstants::validation($resetRequest, $this->validator);
+            if ($validation !== true) {
+                return new JsonResponse(['errors' => $validation], 400);
+            }
+            $this->userService->resetPassword($resetRequest);
+            return new JsonResponse([
+                'message' => 'Mot de passe réinitialisé avec succès',
+                'code' => Response::HTTP_OK,
+            ]);
+        } catch (ExceptionInterface $e) {
+            return new JsonResponse(['message' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        } catch (\Exception $e) {
+            return new JsonResponse(['message' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -160,68 +258,14 @@ class UserController extends AbstractController
                 'message' => $e->getMessage(),
                 'line' => $e->getLine(),
                 'file'=> $e->getTrace(),
-            ]);
+            ], Response::HTTP_BAD_REQUEST);
+        }
+        catch(HttpException $e)
+        {
+            return new JsonResponse([
+                'message' => $e->getMessage(),
+            ], $e->getStatusCode());
         }
     }
 
-    
-    // #[Route('/{id}/activate', name: 'app_user_activate', methods: ['GET'])]
-    // public function getByEmail( Request $request, int $id):JsonResponse
-    // {
-    //     try {
-    //         $jsonResponse = $request->getContent();
-    //         if ($jsonResponse === "")
-    //         {
-    //              throw new IncorrectRequestException("Coprs de requette mal formee");
-    //         }
-    //         $activateRequest = $this->serializer->deserialize($jsonResponse, ActivateRequest::class, 'json');
-    //         $validation = AppValuesConstants::validation($activateRequest, $this->validator);
-    //         if($validation !== true){
-    //             return new JsonResponse(['errors' => $validation], 400);
-    //         }
-    //         $this->userService->activate($activateRequest, $id);
-    //         return new JsonResponse([
-    //             'message' => 'User activate Success',
-    //             'data' => null
-    //         ]);
-    //     }
-    //     catch(ExceptionInterface $e)
-    //     {
-    //         return new JsonResponse([
-    //             'message' => $e->getMessage(),
-    //             'line' => $e->getLine(),
-    //             'file'=> $e->getTrace(),
-    //         ]);
-    //     }
-    // }
-
-    // #[Route('/{id}/activate', name: 'app_user_activate', methods: ['POST'])]
-    // public function getById( Request $request, int $id):JsonResponse
-    // {
-    //     try {
-    //         $jsonResponse = $request->getContent();
-    //         if ($jsonResponse === "")
-    //         {
-    //              throw new IncorrectRequestException("Coprs de requette mal formee");
-    //         }
-    //         $activateRequest = $this->serializer->deserialize($jsonResponse, ActivateRequest::class, 'json');
-    //         $validation = AppValuesConstants::validation($activateRequest, $this->validator);
-    //         if($validation !== true){
-    //             return new JsonResponse(['errors' => $validation], 400);
-    //         }
-    //         $this->userService->activate($activateRequest, $id);
-    //         return new JsonResponse([
-    //             'message' => 'User activate Success',
-    //             'data' => null
-    //         ]);
-    //     }
-    //     catch(ExceptionInterface $e)
-    //     {
-    //         return new JsonResponse([
-    //             'message' => $e->getMessage(),
-    //             'line' => $e->getLine(),
-    //             'file'=> $e->getTrace(),
-    //         ]);
-    //     }
-    // }
 }

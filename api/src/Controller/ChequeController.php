@@ -9,7 +9,7 @@ use App\Services\Account\IAccountService;
 use App\Services\Cheque\IChequeService;
 use App\Utils\Constants\AppValuesConstants;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\Exception\ExceptionInterface;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -58,7 +58,7 @@ class ChequeController extends AbstractController
                 'message' => $e->getMessage(),
                 'line' => $e->getLine(),
                 'file'=> $e->getTrace(),
-            ]); 
+            ], Response::HTTP_BAD_REQUEST);
         }
        
     }
@@ -88,7 +88,7 @@ class ChequeController extends AbstractController
                 'message' => $e->getMessage(),
                 'line' => $e->getLine(),
                 'file'=> $e->getTrace(),
-            ]);
+            ], Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -112,7 +112,7 @@ class ChequeController extends AbstractController
                 'message' => $e->getMessage(),
                 'line' => $e->getLine(),
                 'file'=> $e->getTrace(),
-            ]);
+            ], Response::HTTP_BAD_REQUEST);
         }
     }
     

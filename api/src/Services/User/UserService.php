@@ -10,8 +10,10 @@ use App\Exception\RessourceNotFoundException;
 use App\Repository\ActeurRepository;
 use App\Repository\UserRepository;
 use App\Request\User\ActivateRequest;
+use App\Request\User\ForgotPasswordRequest;
 use App\Request\User\LoginRequest;
 use App\Request\User\RegisterRequest;
+use App\Request\User\ResetPasswordRequest;
 use App\Request\User\UpdateRequest;
 use App\Services\Helpers\HelperFonction;
 use DateTime;
@@ -141,5 +143,48 @@ readonly class UserService implements IUserService
         $this->manager->persist($user);
         $this->manager->flush();
         return json_encode(json_decode($this->serializer->serialize($this->getByUser($user), 'json')));
+    }
+
+    public function resendCode(string $email): Acteur
+    {
+        $user = $this->getByEmail($email);
+        if (!$user) {
+            throw new RessourceNotFoundException("Cette email n'est pas associe a un utilisateur dans la BD");
+        }
+        $user->setCodeVerification(HelperFonction::generateDigitNumber());
+        $this->manager->persist($user);
+        $this->manager->flush();
+        return $this->getByUser($user);
+    }
+
+    public function forgotPassword(string $email): Acteur
+    {
+        $user = $this->getByEmail($email);
+        if (!$user) {
+            throw new RessourceNotFoundException("Cette email n'est pas associe a un utilisateur dans la BD");
+        }
+        $user->setCodeVerification(HelperFonction::generateDigitNumber());
+        $this->manager->persist($user);
+        $this->manager->flush();
+        return $this->getByUser($user);
+    }
+
+    public function resetPassword(ResetPasswordRequest $request): void
+    {
+        $user = $this->getByEmail($request->email);
+        if (!$user) {
+            throw new RessourceNotFoundException("Cette email n'est pas associe a un utilisateur dans la BD");
+        }
+        if ($request->code !== $user->getCodeVerification()) {
+            throw new IncorrectRequestException("Le code de réinitialisation n'est pas correct");
+        }
+        if ($request->password !== $request->passwordConfirmation) {
+            throw new IncorrectRequestException("La confirmation du mot de passe n'est pas conforme");
+        }
+        $user->setPassword($this->passwordHasher->hashPassword($user, $request->password));
+        $user->setCodeVerification(null);
+        $user->setUpdatedAt(new \DateTime('now'));
+        $this->manager->persist($user);
+        $this->manager->flush();
     }
 }

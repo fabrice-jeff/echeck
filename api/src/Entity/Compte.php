@@ -23,9 +23,6 @@ class Compte
     #[ORM\Column(length: 255, unique:true)]
     private ?string $bic = null;
 
-    // #[ORM\Column]
-    // private ?\DateTime $dateExpiration = null;
-
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?Banque $banque = null;
